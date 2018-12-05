@@ -2,6 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.1</Version>
+    <Authors>Hayrullah Cansu</Authors>
+    <Company>Hayrullah Cansu</Company>
+    <Description>NLog Target/Appender for Apache Kafka</Description>
+    <Copyright>Copyright 2017-2018, Hayrullah Cansu</Copyright>
+    <PackageIconUrl>https://raw.githubusercontent.com/hayrullahcansu/nlog-kafka-target/master/icon.png</PackageIconUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/hayrullahcansu/nlog-kafka-target/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/hayrullahcansu/nlog-kafka-target</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hayrullahcansu/nlog-kafka-target</RepositoryUrl>
+    <PackageTags>Kafka;nlog-kafka-appender;librdkafka;nlog-kafka-target;kafka-target;nlog;appender;target</PackageTags>
+    <PackageReleaseNotes>https://github.com/hayrullahcansu/nlog-kafka-target/releases</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
