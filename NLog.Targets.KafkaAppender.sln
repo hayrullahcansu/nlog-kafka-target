@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog.Targets.KafkaAppender", "NLog.Targets.KafkaAppender\NLog.Targets.KafkaAppender.csproj", "{5C57956F-6822-4736-8EC5-2DC6125862DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog.Targets.KafkaAppender.Test", "NLog.Targets.KafkaAppender.Test\NLog.Targets.KafkaAppender.Test.csproj", "{F7982DDA-7357-495C-B4A0-26F4E9362DDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5C57956F-6822-4736-8EC5-2DC6125862DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C57956F-6822-4736-8EC5-2DC6125862DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C57956F-6822-4736-8EC5-2DC6125862DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7982DDA-7357-495C-B4A0-26F4E9362DDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7982DDA-7357-495C-B4A0-26F4E9362DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7982DDA-7357-495C-B4A0-26F4E9362DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7982DDA-7357-495C-B4A0-26F4E9362DDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
