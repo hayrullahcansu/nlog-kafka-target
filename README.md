@@ -16,7 +16,7 @@ ASP.NET Core (NLog.Web.AspNetCore package)
 Install via Package-Manager   Install-Package NLog.Targets.KafkaAppender
 Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
 ```
-### Step 2: Configure log4net sections
+### Step 2: Configure nlog sections
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
