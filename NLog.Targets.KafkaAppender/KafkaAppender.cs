@@ -106,8 +106,7 @@ namespace NLog.Targets.KafkaAppender
             {
                 string topic = this.Topic.Render(logEvent);
                 string logMessage = this.Layout.Render(logEvent);
-                var data = Encoding.UTF8.GetBytes(logMessage);
-                producer.Produce(ref topic, ref data);
+                producer.Produce(ref topic, ref logMessage);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Confluent.Kafka;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,9 +12,12 @@ namespace NLog.Targets.KafkaAppender
 
         }
 
-        public override void Produce(ref string topic, ref byte[] data)
+        public override void Produce(ref string topic, ref string data)
         {
-            producer.ProduceAsync(topic, null, 0, 0, data, 0, data.Length, 0).GetAwaiter().GetResult();
+            producer.Produce(topic, new Message<Confluent.Kafka.Null, string>()
+            {
+                Value = data
+            });
         }
     }
 }
