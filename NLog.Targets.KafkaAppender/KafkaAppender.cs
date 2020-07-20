@@ -3,10 +3,7 @@ using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets.KafkaAppender.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace NLog.Targets.KafkaAppender
 {
@@ -43,9 +40,9 @@ namespace NLog.Targets.KafkaAppender
         /// </summary>
         public bool Async { get; set; } = false;
 
-        private static KafkaProducerAbstract producer;
-        private static readonly object _locker = new object();
-        private static bool recovering = false;
+        private KafkaProducerAbstract _producer;
+        private readonly object _locker = new object();
+        private bool _recovering;
 
         /// <summary>
         /// initializeTarget
@@ -55,23 +52,23 @@ namespace NLog.Targets.KafkaAppender
             base.InitializeTarget();
             try
             {
-                if (Brokers == null || Brokers.Length == 0)
+                if (string.IsNullOrEmpty(Brokers))
                 {
                     throw new BrokerNotFoundException("Broker is not found");
                 }
-                if (producer == null)
+                if (_producer == null)
                 {
                     lock (_locker)
                     {
-                        if (producer == null)
+                        if (_producer == null)
                         {
                             if (Async)
                             {
-                                producer = new KafkaProducerAsync(Brokers);
+                                _producer = new KafkaProducerAsync(Brokers);
                             }
                             else
                             {
-                                producer = new KafkaProducerSync(Brokers);
+                                _producer = new KafkaProducerSync(Brokers);
                             }
                         }
                     }
@@ -95,7 +92,7 @@ namespace NLog.Targets.KafkaAppender
             base.CloseTarget();
             try
             {
-                producer?.Dispose();
+                _producer?.Dispose();
             }
             catch (Exception ex)
             {
@@ -114,42 +111,39 @@ namespace NLog.Targets.KafkaAppender
         {
             try
             {
-                string topic = this.Topic.Render(logEvent);
-                string logMessage = this.Layout.Render(logEvent);
-                producer.Produce(ref topic, ref logMessage);
+                var topic = Topic.Render(logEvent);
+                var logMessage = Layout.Render(logEvent);
+                _producer.Produce(ref topic, ref logMessage);
             }
             catch (ProduceException<Null, string> ex)
             {
-                if (ex.Error.IsFatal)
+                if (ex.Error.IsFatal && !_recovering)
                 {
-                    if (!recovering)
+                    lock (_locker)
                     {
-                        lock (_locker)
+                        if (!_recovering)
                         {
-                            if (!recovering)
+                            _recovering = true;
+                            try
                             {
-                                recovering = true;
-                                try
-                                {
-                                    producer?.Dispose();
-                                }
-                                catch (Exception ex2)
-                                {
-                                    if (Debug)
-                                    {
-                                        Console.WriteLine(ex2.ToString());
-                                    }
-                                }
-                                if (Async)
-                                {
-                                    producer = new KafkaProducerAsync(Brokers);
-                                }
-                                else
-                                {
-                                    producer = new KafkaProducerSync(Brokers);
-                                }
-                                recovering = false;
+                                _producer?.Dispose();
                             }
+                            catch (Exception ex2)
+                            {
+                                if (Debug)
+                                {
+                                    Console.WriteLine(ex2.ToString());
+                                }
+                            }
+                            if (Async)
+                            {
+                                _producer = new KafkaProducerAsync(Brokers);
+                            }
+                            else
+                            {
+                                _producer = new KafkaProducerSync(Brokers);
+                            }
+                            _recovering = false;
                         }
                     }
                 }
