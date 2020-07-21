@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace NLog.Targets.KafkaAppender.Exceptions
 {
-    [Serializable]
     public class BrokerNotFoundException : Exception
     {
         public BrokerNotFoundException() { }
@@ -12,6 +10,5 @@ namespace NLog.Targets.KafkaAppender.Exceptions
 
         public BrokerNotFoundException(string message, Exception innerException) : base(message, innerException) { }
 
-        protected BrokerNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }
