@@ -1,29 +1,44 @@
 ﻿using Confluent.Kafka;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NLog.Targets.KafkaAppender
 {
     public abstract class KafkaProducerAbstract : IDisposable
     {
-        public KafkaProducerAbstract(string brokers)
+        private bool _disposed;
+
+        protected KafkaProducerAbstract(string brokers)
         {
             var conf = new ProducerConfig
             {
                 BootstrapServers = brokers
             };
 
-            producer = new ProducerBuilder<Null, string>(conf).Build();
+            Producer = new ProducerBuilder<Null, string>(conf).Build();
         }
-        protected IProducer<Null, string> producer;
+
+        protected IProducer<Null, string> Producer;
 
         public abstract void Produce(ref string topic, ref string data);
 
         public void Dispose()
         {
-            producer?.Flush();
-            producer?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Producer?.Flush();
+                Producer?.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }
