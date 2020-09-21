@@ -4,11 +4,11 @@
     <TargetFrameworks>
       netstandard2.0;net45;net451;net452;net46;net461;net462;net47;net471;net472;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1
     </TargetFrameworks>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <Authors>Hayrullah Cansu</Authors>
     <Company>Hayrullah Cansu</Company>
     <Description>NLog Target/Appender for Apache Kafka</Description>
-    <Copyright>Copyright 2017-2018, Hayrullah Cansu</Copyright>
+    <Copyright>Copyright 2017-2020, Hayrullah Cansu</Copyright>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseUrl>https://raw.githubusercontent.com/hayrullahcansu/nlog-kafka-target/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/hayrullahcansu/nlog-kafka-target</PackageProjectUrl>
@@ -17,13 +17,13 @@
     <PackageReleaseNotes>https://github.com/hayrullahcansu/nlog-kafka-target/releases</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>NLog.Targets.KafkaAppender</PackageId>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
+    <AssemblyVersion>1.0.8.0</AssemblyVersion>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="1.4.4" />
-    <PackageReference Include="NLog" Version="4.7.2" />
+    <PackageReference Include="Confluent.Kafka" Version="1.5.1" />
+    <PackageReference Include="NLog" Version="4.7.4" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\icon.png" Pack="true" PackagePath="\"/>
