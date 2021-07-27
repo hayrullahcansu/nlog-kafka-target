@@ -2,7 +2,7 @@
 
 namespace NLog.Targets.KafkaAppender.Exceptions
 {
-    public class BrokerNotFoundException : Exception
+    public class BrokerNotFoundException : NLogConfigurationException
     {
         public BrokerNotFoundException() { }
 

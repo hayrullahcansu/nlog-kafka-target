@@ -6,7 +6,7 @@ namespace NLog.Targets.KafkaAppender
     {
         public KafkaProducerSync(string brokers) : base(brokers) { }
 
-        public override void Produce(ref string topic, ref string data)
+        public override void Produce(string topic, string data)
         {
             Producer.Produce(topic, new Message<Null, string>
             {
