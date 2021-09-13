@@ -93,6 +93,7 @@ namespace NLog.Targets.KafkaAppender
             try
             {
                 _producer?.Dispose();
+                _producer = null;
             }
             catch (Exception ex)
             {
