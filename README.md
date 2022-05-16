@@ -29,10 +29,12 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
   <targets>
     <target xsi:type="KafkaAppender"
             name="kafka"
-            topic="${logger}"
+            topic="${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true}"
             layout="${longdate}|${level:uppercase=true}|${logger}|${message}"
             brokers="localhost:9092"
-            async="false">
+            async="false"
+            >
+
     </target>
   </targets>
   <rules>
@@ -40,18 +42,17 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
   </rules>
 </nlog>
 ```
+| Param Name | Variable Type | Requirement | Description                         | Default                                                                             |
+|------------|---------------|-------------|-------------------------------------|-------------------------------------------------------------------------------------|
+| name       | `:string`     |    yes`*`   | Target's name                       |                                                                                     |
+| topic      | `:layout`     |    yes`*`   | Topic pattern can be layout         | `${logger}` |
+| layout     | `:layout`     |      no     | Layout used to format log messages. | `${longdate}|${level:uppercase=true}|${logger}|${message}`                          |
+| brokers    | `:string`     |    yes`*`   | Kafka brokers with comma-separated  |                                                                                     |
+| async      | `:boolean`    |      no     | Async or sync mode                  | `false`                                                                             |
 
-Parameters:
-
-- **name** : Targets name - `:string` (Required)
-- **topic** : Kafka Topic for publish - `:layout` (Required)
-- **layout** : Layout used to format log messages - `:layout` (Required)
-- **brokers** : Kafka brokers with comma-separated - `:layout` (Required)
-- **async** : Async or sync mode - `:boolean` (Required)
 
 Check documentation about all [`Layout Renderers`](https://nlog-project.org/config/?tab=layout-renderers)
 
-Check [NLog InternalLogger](https://github.com/NLog/NLog/wiki/Internal-Logging) to diagnose issues with Kafka publishing.
 
 ## Usage
 
@@ -67,10 +68,10 @@ namespace NLog.Targets.KafkaAppender.Test
             var logger = NLog.LogManager.GetCurrentClassLogger();
             logger.Error("hello world");
             
-            //topic layout:     ${logger}
+            //topic layout:     ${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true}
             //message layout:   ${longdate}|${level:uppercase=true}|${logger}|${message}
             
-            //topic output:     NLog.Targets.KafkaAppender.Test.Program
+            //topic output:     NLog.Targets.KafkaAppender.Test.Program.Main
             //message output:   2018-12-05 18:27:46.7382|ERROR|NLog.Targets.KafkaAppender.Test.Program|hello world 
             
         }

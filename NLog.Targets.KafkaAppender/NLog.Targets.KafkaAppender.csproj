@@ -6,7 +6,7 @@
     <Authors>Hayrullah Cansu</Authors>
     <Company>Hayrullah Cansu</Company>
     <Description>NLog Target/Appender for Apache Kafka</Description>
-    <Copyright>Copyright 2017-2020, Hayrullah Cansu</Copyright>
+    <Copyright>Copyright 2017-2022, Hayrullah Cansu</Copyright>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseUrl>https://raw.githubusercontent.com/hayrullahcansu/nlog-kafka-target/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/hayrullahcansu/nlog-kafka-target</PackageProjectUrl>
