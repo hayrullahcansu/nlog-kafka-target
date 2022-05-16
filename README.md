@@ -1,6 +1,13 @@
 # nlog-kafka-target
 nlog appender for kafka which provides the custom topics pattern and partitions
 
+![Nuget](https://img.shields.io/nuget/dt/NLog.Targets.KafkaAppender)
+[![GitHub issues](https://img.shields.io/github/issues/hayrullahcansu/nlog-kafka-target)](https://github.com/hayrullahcansu/nlog-kafka-target/issues)
+![Nuget](https://img.shields.io/nuget/v/NLog.Targets.KafkaAppender)
+[![GitHub forks](https://img.shields.io/github/forks/hayrullahcansu/nlog-kafka-target)](https://github.com/hayrullahcansu/nlog-kafka-target/network)
+[![GitHub stars](https://img.shields.io/github/stars/hayrullahcansu/nlog-kafka-target)](https://github.com/hayrullahcansu/nlog-kafka-target/stargazers)
+
+
 ## Supported frameworks 
 ```
 .NET Framework 4.5, 4.6 & 4.7
