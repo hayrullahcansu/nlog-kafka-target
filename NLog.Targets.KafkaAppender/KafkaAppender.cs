@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using NLog.Common;
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets.KafkaAppender.Exceptions;
@@ -13,27 +14,18 @@ namespace NLog.Targets.KafkaAppender
         /// <summary>
         /// Gets or sets the layout used to format topic of log messages.
         /// </summary>
+        /// <remarks>
+        /// Kafka topic has max length of 255, and allows the characters: a-z, A-Z, 0-9, . (dot), _ (underscore), and - (dash).
+        /// </remarks>
         [RequiredParameter]
-        [DefaultValue("${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true}")]
+        [DefaultValue("${logger}")]
         public Layout Topic { get; set; }
-
-        /// <summary>
-        /// Gets or sets the layout used to format log messages.
-        /// </summary>
-        [DefaultValue("${longdate}|${level:uppercase=true}|${logger}|${message}")]
-        public override Layout Layout { get; set; }
 
         /// <summary>
         /// Kafka brokers with comma-separated
         /// </summary>
         [RequiredParameter]
-        public string Brokers { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets debugging mode enabled
-        /// </summary>
-        public bool Debug { get; set; } = false;
+        public Layout Brokers { get; set; }
 
         /// <summary>
         /// Gets or sets async or sync mode
@@ -45,17 +37,26 @@ namespace NLog.Targets.KafkaAppender
         private bool _recovering;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="KafkaAppender"/> class.
+        /// </summary>
+        public KafkaAppender()
+        {
+            OptimizeBufferReuse = true;
+        }
+
+        /// <summary>
         /// initializeTarget
         /// </summary>
         protected override void InitializeTarget()
         {
-            base.InitializeTarget();
+            var brokers = RenderLogEvent(Brokers, LogEventInfo.CreateNullEvent());
+            if (string.IsNullOrEmpty(brokers))
+            {
+                throw new BrokerNotFoundException("Broker is not found");
+            }
+
             try
             {
-                if (string.IsNullOrEmpty(Brokers))
-                {
-                    throw new BrokerNotFoundException("Broker is not found");
-                }
                 if (_producer == null)
                 {
                     lock (_locker)
@@ -64,11 +65,11 @@ namespace NLog.Targets.KafkaAppender
                         {
                             if (Async)
                             {
-                                _producer = new KafkaProducerAsync(Brokers);
+                                _producer = new KafkaProducerAsync(brokers);
                             }
                             else
                             {
-                                _producer = new KafkaProducerSync(Brokers);
+                                _producer = new KafkaProducerSync(brokers);
                             }
                         }
                     }
@@ -76,12 +77,11 @@ namespace NLog.Targets.KafkaAppender
             }
             catch (Exception ex)
             {
-                if (Debug)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-                base.CloseTarget();
+                InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Failed creating producer with Kafka-Brokers: {1}", Name, brokers);
+                throw;
             }
+            
+            base.InitializeTarget();
         }
 
         /// <summary>
@@ -89,19 +89,21 @@ namespace NLog.Targets.KafkaAppender
         /// </summary>
         protected override void CloseTarget()
         {
-            base.CloseTarget();
             try
             {
                 _producer?.Dispose();
-                _producer = null;
             }
             catch (Exception ex)
             {
-                if (Debug)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
+                InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Exception when disposing producer during close.", Name);
+                throw;
             }
+            finally
+            {
+                _producer = null;   // Let go of disposed producer
+            }
+
+            base.CloseTarget();
         }
 
         /// <summary>
@@ -110,16 +112,25 @@ namespace NLog.Targets.KafkaAppender
         /// <param name="logEvent"></param>
         protected override void Write(LogEventInfo logEvent)
         {
+            var topic = RenderLogEvent(Topic, logEvent);
+            var logMessage = RenderLogEvent(Layout, logEvent);
+
             try
             {
-                var topic = Topic.Render(logEvent);
-                var logMessage = Layout.Render(logEvent);
-                _producer.Produce(ref topic, ref logMessage);
+                _producer.Produce(topic, logMessage);
             }
             catch (ProduceException<Null, string> ex)
             {
+                InternalLogger.Warn(ex, "KafkaAppender(Name={0}) - {1}Exception when sending message. Reason={2}", Name, ex.Error.IsFatal ? "Fatal " : "", ex.Error.ToString());
+
                 if (ex.Error.IsFatal && !_recovering)
                 {
+                    var brokers = RenderLogEvent(Brokers, LogEventInfo.CreateNullEvent());
+                    if (string.IsNullOrEmpty(brokers))
+                    {
+                        throw new BrokerNotFoundException("Broker is not found");
+                    }
+
                     lock (_locker)
                     {
                         if (!_recovering)
@@ -131,18 +142,16 @@ namespace NLog.Targets.KafkaAppender
                             }
                             catch (Exception ex2)
                             {
-                                if (Debug)
-                                {
-                                    Console.WriteLine(ex2.ToString());
-                                }
+                                InternalLogger.Error(ex2, "KafkaAppender(Name={0}) - Exception when disposing producer during recovery.", Name);
                             }
+
                             if (Async)
                             {
-                                _producer = new KafkaProducerAsync(Brokers);
+                                _producer = new KafkaProducerAsync(brokers);
                             }
                             else
                             {
-                                _producer = new KafkaProducerSync(Brokers);
+                                _producer = new KafkaProducerSync(brokers);
                             }
                             _recovering = false;
                         }
@@ -151,12 +160,26 @@ namespace NLog.Targets.KafkaAppender
             }
             catch (Exception ex)
             {
-                if (Debug)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
+                InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Exception when sending message.", Name);
+                throw;
             }
+        }
 
+        /// <summary>
+        /// flushing the target
+        /// </summary>
+        protected override void FlushAsync(AsyncContinuation asyncContinuation)
+        {
+            try
+            {
+                _producer?.Flush();
+                asyncContinuation(null);
+            }
+            catch (Exception ex)
+            {
+                InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Exception when flushing producer.", Name);
+                asyncContinuation(ex);
+            }
         }
     }
 }

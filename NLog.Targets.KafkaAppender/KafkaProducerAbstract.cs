@@ -19,7 +19,12 @@ namespace NLog.Targets.KafkaAppender
 
         protected IProducer<Null, string> Producer;
 
-        public abstract void Produce(ref string topic, ref string data);
+        public abstract void Produce(string topic, string data);
+
+        public void Flush()
+        {
+            Producer?.Flush();
+        }
 
         public void Dispose()
         {
@@ -34,11 +39,16 @@ namespace NLog.Targets.KafkaAppender
 
             if (disposing)
             {
-                Producer?.Flush();
-                Producer?.Dispose();
+                try
+                {
+                    Producer?.Flush();
+                }
+                finally
+                {
+                    Producer?.Dispose();
+                    _disposed = true;
+                }
             }
-
-            _disposed = true;
         }
     }
 }

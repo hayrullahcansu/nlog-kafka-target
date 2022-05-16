@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog.Targets.KafkaAppender", "NLog.Targets.KafkaAppender\NLog.Targets.KafkaAppender.csproj", "{5C57956F-6822-4736-8EC5-2DC6125862DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NLog.Targets.KafkaAppender", "NLog.Targets.KafkaAppender\NLog.Targets.KafkaAppender.csproj", "{5C57956F-6822-4736-8EC5-2DC6125862DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog.Targets.KafkaAppender.Test", "NLog.Targets.KafkaAppender.Test\NLog.Targets.KafkaAppender.Test.csproj", "{F7982DDA-7357-495C-B4A0-26F4E9362DDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NLog.Targets.KafkaAppender.Test", "NLog.Targets.KafkaAppender.Test\NLog.Targets.KafkaAppender.Test.csproj", "{F7982DDA-7357-495C-B4A0-26F4E9362DDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B9E27E3D-716A-4719-9925-3C113010C718}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
