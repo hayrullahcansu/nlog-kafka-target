@@ -2,9 +2,11 @@
 using NLog.Common;
 using NLog.Config;
 using NLog.Layouts;
+using NLog.Targets.KafkaAppender.Configs;
 using NLog.Targets.KafkaAppender.Exceptions;
 using System;
 using System.ComponentModel;
+using System.IO;
 
 namespace NLog.Targets.KafkaAppender
 {
@@ -26,6 +28,20 @@ namespace NLog.Targets.KafkaAppender
         /// </summary>
         [RequiredParameter]
         public Layout Brokers { get; set; }
+
+        /// <summary>
+        /// Path to certificate used for authentication.
+        /// </summary>
+        public string SslCertificateLocation { get; set; }
+
+        /// <summary>
+        /// Protocol used to communicate with brokers.
+        /// </summary>
+        /// <remarks>
+        /// Default: plaintext
+        /// </remarks>
+        [DefaultValue(SecurityProtocol.Plaintext)]
+        public SecurityProtocol SecurityProtocol { get; set; }
 
         /// <summary>
         /// Gets or sets async or sync mode
@@ -55,21 +71,32 @@ namespace NLog.Targets.KafkaAppender
                 throw new BrokerNotFoundException("Broker is not found");
             }
 
+            if (!string.IsNullOrEmpty(SslCertificateLocation) && !File.Exists(SslCertificateLocation))
+            {
+                throw new SslCertificateNotFoundException($"Could not find certificate by specified path: {SslCertificateLocation}");
+            }
+
             try
             {
                 if (_producer == null)
                 {
                     lock (_locker)
                     {
+                        var configs = new KafkaProducerConfigs
+                        {
+                            SslCertificateLocation = SslCertificateLocation,
+                            SecurityProtocol = SecurityProtocol,
+                        };
+
                         if (_producer == null)
                         {
                             if (Async)
                             {
-                                _producer = new KafkaProducerAsync(brokers);
+                                _producer = new KafkaProducerAsync(brokers, configs);
                             }
                             else
                             {
-                                _producer = new KafkaProducerSync(brokers);
+                                _producer = new KafkaProducerSync(brokers, configs);
                             }
                         }
                     }

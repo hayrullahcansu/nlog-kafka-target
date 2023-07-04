@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using NLog.Targets.KafkaAppender.Configs;
 using System;
 
 namespace NLog.Targets.KafkaAppender
@@ -7,11 +8,13 @@ namespace NLog.Targets.KafkaAppender
     {
         private bool _disposed;
 
-        protected KafkaProducerAbstract(string brokers)
+        protected KafkaProducerAbstract(string brokers, KafkaProducerConfigs configs = null)
         {
             var conf = new ProducerConfig
             {
-                BootstrapServers = brokers
+                BootstrapServers = brokers,
+                SslCertificateLocation = configs?.SslCertificateLocation,
+                SecurityProtocol = configs?.SecurityProtocol,
             };
 
             Producer = new ProducerBuilder<Null, string>(conf).Build();
