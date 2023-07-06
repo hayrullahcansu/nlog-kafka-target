@@ -40,6 +40,8 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
             layout="${longdate}|${level:uppercase=true}|${logger}|${message}"
             brokers="localhost:9092"
             async="false"
+            sslCertificateLocation=""
+            securityProtocol="plaintext"
             >
 
     </target>
@@ -49,13 +51,15 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
   </rules>
 </nlog>
 ```
-| Param Name | Variable Type | Requirement | Description                         | Default                                                                             |
-|------------|---------------|-------------|-------------------------------------|-------------------------------------------------------------------------------------|
-| name       | `:string`     |    yes`*`   | Target's name                       |                                                                                     |
-| topic      | `:layout`     |    yes`*`   | Topic pattern can be layout         | `${logger}` |
-| layout     | `:layout`     |      no     | Layout used to format log messages. | `${longdate}|${level:uppercase=true}|${logger}|${message}`                          |
-| brokers    | `:string`     |    yes`*`   | Kafka brokers with comma-separated  |                                                                                     |
-| async      | `:boolean`    |      no     | Async or sync mode                  | `false`                                                                             |
+| Param Name              | Variable Type | Requirement | Description                               | Default                                                                             | Possible values                            |
+|-------------------------|---------------|-------------|-------------------------------------------|-------------------------------------------------------------------------------------|--------------------------------------------|
+| name                    | `:string`     |    yes`*`   | Target's name                             |                                                                                     |                                            |
+| topic                   | `:layout`     |    yes`*`   | Topic pattern can be layout               | `${logger}`                                                                         |                                            |
+| layout                  | `:layout`     |      no     | Layout used to format log messages.       | `${longdate}|${level:uppercase=true}|${logger}|${message}`                          |                                            |
+| brokers                 | `:string`     |    yes`*`   | Kafka brokers with comma-separated        |                                                                                     |                                            |
+| async                   | `:boolean`    |      no     | Async or sync mode                        | `false`                                                                             |                                            |
+| sslCertificateLocation  | `:string`     |      no     | Path to ssl certificate                   |                                                                                     |                                            |
+| securityProtocol        | `:enum`       |      no     | Protocol used to communicate with brokers | `plaintext`                                                                         | `Plaintext` `Ssl` `SaslPlaintext` `SaslSsl`|
 
 
 Check documentation about all [`Layout Renderers`](https://nlog-project.org/config/?tab=layout-renderers)
