@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;net46;netcoreapp2.1</TargetFrameworks>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Authors>Hayrullah Cansu</Authors>
     <Company>Hayrullah Cansu</Company>
     <Description>NLog Target/Appender for Apache Kafka</Description>
-    <Copyright>Copyright 2017-2022, Hayrullah Cansu</Copyright>
+    <Copyright>Copyright 2017-2023, Hayrullah Cansu</Copyright>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseUrl>https://raw.githubusercontent.com/hayrullahcansu/nlog-kafka-target/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/hayrullahcansu/nlog-kafka-target</PackageProjectUrl>
@@ -15,7 +15,7 @@
     <PackageReleaseNotes>https://github.com/hayrullahcansu/nlog-kafka-target/releases</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>NLog.Targets.KafkaAppender</PackageId>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0</AssemblyVersion>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
