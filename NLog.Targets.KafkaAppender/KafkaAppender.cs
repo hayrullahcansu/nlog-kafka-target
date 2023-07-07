@@ -30,18 +30,14 @@ namespace NLog.Targets.KafkaAppender
         public Layout Brokers { get; set; }
 
         /// <summary>
-        /// Path to certificate used for authentication.
+        /// Path to certificate (client's public key - PEM) used for authentication.
         /// </summary>
-        public string SslCertificateLocation { get; set; }
+        public Layout SslCertificateLocation { get; set; }
 
         /// <summary>
         /// Protocol used to communicate with brokers.
         /// </summary>
-        /// <remarks>
-        /// Default: plaintext
-        /// </remarks>
-        [DefaultValue(SecurityProtocol.Plaintext)]
-        public SecurityProtocol SecurityProtocol { get; set; }
+        public SecurityProtocol? SecurityProtocol { get; set; }
 
         /// <summary>
         /// Gets or sets async or sync mode
@@ -49,8 +45,6 @@ namespace NLog.Targets.KafkaAppender
         public bool Async { get; set; } = false;
 
         private KafkaProducerAbstract _producer;
-        private readonly object _locker = new object();
-        private bool _recovering;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KafkaAppender"/> class.
@@ -65,41 +59,52 @@ namespace NLog.Targets.KafkaAppender
         /// </summary>
         protected override void InitializeTarget()
         {
+            if (_producer == null)
+            {
+                InitializeKafkaProducer();
+            }
+            
+            base.InitializeTarget();
+        }
+
+        private void InitializeKafkaProducer()
+        {
             var brokers = RenderLogEvent(Brokers, LogEventInfo.CreateNullEvent());
             if (string.IsNullOrEmpty(brokers))
             {
                 throw new BrokerNotFoundException("Broker is not found");
             }
 
-            if (!string.IsNullOrEmpty(SslCertificateLocation) && !File.Exists(SslCertificateLocation))
+            var sslCertificateLocation = RenderLogEvent(SslCertificateLocation, LogEventInfo.CreateNullEvent());
+            if (!string.IsNullOrEmpty(sslCertificateLocation) && !File.Exists(sslCertificateLocation))
             {
-                throw new SslCertificateNotFoundException($"Could not find certificate by specified path: {SslCertificateLocation}");
+                throw new SslCertificateNotFoundException($"Could not find certificate by specified path: {sslCertificateLocation}");
+            }
+
+            var configs = new KafkaProducerConfigs
+            {
+                SslCertificateLocation = string.IsNullOrEmpty(sslCertificateLocation) ? null : sslCertificateLocation,
+                SecurityProtocol = SecurityProtocol,
+            };
+
+            try
+            {
+                _producer?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Exception when disposing producer during recovery.", Name);
             }
 
             try
             {
-                if (_producer == null)
+                if (Async)
                 {
-                    lock (_locker)
-                    {
-                        var configs = new KafkaProducerConfigs
-                        {
-                            SslCertificateLocation = SslCertificateLocation,
-                            SecurityProtocol = SecurityProtocol,
-                        };
-
-                        if (_producer == null)
-                        {
-                            if (Async)
-                            {
-                                _producer = new KafkaProducerAsync(brokers, configs);
-                            }
-                            else
-                            {
-                                _producer = new KafkaProducerSync(brokers, configs);
-                            }
-                        }
-                    }
+                    _producer = new KafkaProducerAsync(brokers, configs);
+                }
+                else
+                {
+                    _producer = new KafkaProducerSync(brokers, configs);
                 }
             }
             catch (Exception ex)
@@ -107,8 +112,6 @@ namespace NLog.Targets.KafkaAppender
                 InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Failed creating producer with Kafka-Brokers: {1}", Name, brokers);
                 throw;
             }
-            
-            base.InitializeTarget();
         }
 
         /// <summary>
@@ -148,46 +151,16 @@ namespace NLog.Targets.KafkaAppender
             }
             catch (ProduceException<Null, string> ex)
             {
-                InternalLogger.Warn(ex, "KafkaAppender(Name={0}) - {1}Exception when sending message. Reason={2}", Name, ex.Error.IsFatal ? "Fatal " : "", ex.Error.ToString());
+                InternalLogger.Warn(ex, "KafkaAppender(Name={0}) - {1}Exception when sending message to topic={2}. Reason={3}", Name, ex.Error.IsFatal ? "Fatal " : "", topic, ex.Error.ToString());
 
-                if (ex.Error.IsFatal && !_recovering)
+                if (ex.Error.IsFatal)
                 {
-                    var brokers = RenderLogEvent(Brokers, LogEventInfo.CreateNullEvent());
-                    if (string.IsNullOrEmpty(brokers))
-                    {
-                        throw new BrokerNotFoundException("Broker is not found");
-                    }
-
-                    lock (_locker)
-                    {
-                        if (!_recovering)
-                        {
-                            _recovering = true;
-                            try
-                            {
-                                _producer?.Dispose();
-                            }
-                            catch (Exception ex2)
-                            {
-                                InternalLogger.Error(ex2, "KafkaAppender(Name={0}) - Exception when disposing producer during recovery.", Name);
-                            }
-
-                            if (Async)
-                            {
-                                _producer = new KafkaProducerAsync(brokers);
-                            }
-                            else
-                            {
-                                _producer = new KafkaProducerSync(brokers);
-                            }
-                            _recovering = false;
-                        }
-                    }
+                    InitializeKafkaProducer();
                 }
             }
             catch (Exception ex)
             {
-                InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Exception when sending message.", Name);
+                InternalLogger.Error(ex, "KafkaAppender(Name={0}) - Exception when sending message to topic={1}", Name, topic);
                 throw;
             }
         }
