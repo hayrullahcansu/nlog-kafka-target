@@ -6,5 +6,7 @@ namespace NLog.Targets.KafkaAppender.Configs
     {
         public string SslCertificateLocation{ get; set; }
         public SecurityProtocol? SecurityProtocol { get; set; }
+
+        public int? MessageTimeoutMs { get; set; }
     }
 }
