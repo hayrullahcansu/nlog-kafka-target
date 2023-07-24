@@ -15,6 +15,7 @@ namespace NLog.Targets.KafkaAppender
                 BootstrapServers = brokers,
                 SslCertificateLocation = configs?.SslCertificateLocation,
                 SecurityProtocol = configs?.SecurityProtocol,
+                MessageTimeoutMs = configs?.MessageTimeoutMs
             };
 
             Producer = new ProducerBuilder<Null, string>(conf).Build();
