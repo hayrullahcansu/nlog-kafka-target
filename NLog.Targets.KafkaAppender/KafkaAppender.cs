@@ -44,6 +44,12 @@ namespace NLog.Targets.KafkaAppender
         /// </summary>
         public bool Async { get; set; } = false;
 
+        /// <summary>
+        /// Local message timeout.This value is only enforced locally and limits the time a produced message waits for successful delivery. A time of 0 is infinite.
+        /// </summary>
+        public int? MessageTimeoutMs { get; set; }
+
+
         private KafkaProducerAbstract _producer;
 
         /// <summary>
@@ -63,7 +69,7 @@ namespace NLog.Targets.KafkaAppender
             {
                 InitializeKafkaProducer();
             }
-            
+
             base.InitializeTarget();
         }
 
@@ -85,6 +91,7 @@ namespace NLog.Targets.KafkaAppender
             {
                 SslCertificateLocation = string.IsNullOrEmpty(sslCertificateLocation) ? null : sslCertificateLocation,
                 SecurityProtocol = SecurityProtocol,
+                MessageTimeoutMs = MessageTimeoutMs
             };
 
             try
