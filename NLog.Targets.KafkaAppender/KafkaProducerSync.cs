@@ -1,5 +1,7 @@
 ﻿using Confluent.Kafka;
+using NLog.Common;
 using NLog.Targets.KafkaAppender.Configs;
+using System;
 
 namespace NLog.Targets.KafkaAppender
 {
@@ -9,10 +11,18 @@ namespace NLog.Targets.KafkaAppender
 
         public override void Produce(string topic, string data)
         {
-            Producer.Produce(topic, new Message<Null, string>
+            try
             {
-                Value = data
-            });
+                Producer.Produce(topic, new Message<Null, string>
+                {
+                    Value = data
+                });
+            }
+            catch (Exception ex)
+            {
+                InternalLogger.Error(ex, "KafkaAppender - Exception when sending message to topic={0}", topic);
+                throw;
+            }
         }
     }
 }
