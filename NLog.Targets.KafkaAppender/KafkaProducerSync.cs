@@ -11,18 +11,10 @@ namespace NLog.Targets.KafkaAppender
 
         public override void Produce(string topic, string data)
         {
-            try
+            Producer.Produce(topic, new Message<Null, string>
             {
-                Producer.Produce(topic, new Message<Null, string>
-                {
-                    Value = data
-                });
-            }
-            catch (Exception ex)
-            {
-                InternalLogger.Error(ex, "KafkaAppender - Exception when sending message to topic={0}", topic);
-                throw;
-            }
+                Value = data
+            });
         }
     }
 }
