@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Confluent.Kafka;
-using NLog.Common;
 using NLog.Targets.KafkaAppender.Configs;
 
 namespace NLog.Targets.KafkaAppender
@@ -17,18 +15,10 @@ namespace NLog.Targets.KafkaAppender
 
         private async Task ProduceAsync(string topic, string data)
         {
-            try
+            await Producer.ProduceAsync(topic, new Message<Null, string>
             {
-                await Producer.ProduceAsync(topic, new Message<Null, string>
-                {
-                    Value = data
-                }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                InternalLogger.Error(ex, "KafkaAppender - Exception when sending message to topic={0}", topic);
-                throw;
-            }
+                Value = data
+            }).ConfigureAwait(false);
         }
     }
 }

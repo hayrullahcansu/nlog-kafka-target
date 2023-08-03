@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using NLog.Common;
 using NLog.Targets.KafkaAppender.Configs;
 using System;
 
@@ -18,7 +19,12 @@ namespace NLog.Targets.KafkaAppender
                 MessageTimeoutMs = configs?.MessageTimeoutMs
             };
 
-            Producer = new ProducerBuilder<Null, string>(conf).Build();
+            Producer = new ProducerBuilder<Null, string>(conf)
+                .SetErrorHandler((producer, error) =>
+                {
+                    InternalLogger.Error("Error occurred when producing the message. Error code: {0}, Reason: {1}", error.Code, error.Reason);
+                })
+                .Build();
         }
 
         protected IProducer<Null, string> Producer;
