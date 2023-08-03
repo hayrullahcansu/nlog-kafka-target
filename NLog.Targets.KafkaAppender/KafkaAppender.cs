@@ -47,7 +47,7 @@ namespace NLog.Targets.KafkaAppender
         /// <summary>
         /// SSL key password
         /// </summary>
-        public string SslKeyPassword { get; set; }
+        public Layout SslKeyPassword { get; set; }
 
         /// <summary>
         /// Protocol used to communicate with brokers.
@@ -114,12 +114,14 @@ namespace NLog.Targets.KafkaAppender
                 throw new SslCertificateNotFoundException($"Could not find certificate key by specified path: {sslKeyLocation}");
             }
 
+            var sslKeyPassword = RenderLogEvent(SslKeyPassword, LogEventInfo.CreateNullEvent());
+
             var configs = new KafkaProducerConfigs
             {
                 SslCertificateLocation = string.IsNullOrEmpty(sslCertificateLocation) ? null : sslCertificateLocation,
                 SslCaLocation = string.IsNullOrEmpty(sslCaLocation) ? null : sslCaLocation,
                 SslKeyLocation = string.IsNullOrEmpty(sslKeyLocation) ? null : sslKeyLocation,
-                SslKeyPassword = SslKeyPassword,
+                SslKeyPassword = string.IsNullOrEmpty(sslKeyPassword) ? null : sslKeyPassword,
                 SecurityProtocol = SecurityProtocol,
                 MessageTimeoutMs = MessageTimeoutMs
             };
