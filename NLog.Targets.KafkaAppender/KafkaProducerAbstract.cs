@@ -22,7 +22,7 @@ namespace NLog.Targets.KafkaAppender
             Producer = new ProducerBuilder<Null, string>(conf)
                 .SetErrorHandler((producer, error) =>
                 {
-                    InternalLogger.Error("Error occurred when producing the message. Error code: {0}, Reason: {1}", error.Code, error.Reason);
+                    InternalLogger.Error("KafkaAppender - {0}Error when sending message to topic. ErrorCode={1}, Reason={2}", error.IsFatal ? "Fatal " : "", error.Code, error.Reason);
                 })
                 .Build();
         }
