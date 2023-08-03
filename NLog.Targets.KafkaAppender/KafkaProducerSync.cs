@@ -1,7 +1,5 @@
 ﻿using Confluent.Kafka;
-using NLog.Common;
 using NLog.Targets.KafkaAppender.Configs;
-using System;
 
 namespace NLog.Targets.KafkaAppender
 {
