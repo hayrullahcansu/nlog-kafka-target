@@ -13,12 +13,12 @@ namespace NLog.Targets.KafkaAppender
             ProduceAsync(topic, data);
         }
 
-        private async Task ProduceAsync(string topic, string data)
+        private Task ProduceAsync(string topic, string data)
         {
-            await Producer.ProduceAsync(topic, new Message<Null, string>
+            return Producer.ProduceAsync(topic, new Message<Null, string>
             {
                 Value = data
-            }).ConfigureAwait(false);
+            });
         }
     }
 }
