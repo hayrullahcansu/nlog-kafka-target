@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using NLog.Common;
 using NLog.Targets.KafkaAppender.Configs;
 using System;
 
@@ -18,7 +19,12 @@ namespace NLog.Targets.KafkaAppender
                 MessageTimeoutMs = configs?.MessageTimeoutMs
             };
 
-            Producer = new ProducerBuilder<Null, string>(conf).Build();
+            Producer = new ProducerBuilder<Null, string>(conf)
+                .SetErrorHandler((producer, error) =>
+                {
+                    InternalLogger.Error("KafkaAppender - {0}Error when sending message to topic. ErrorCode={1}, Reason={2}", error.IsFatal ? "Fatal " : "", error.Code, error.Reason);
+                })
+                .Build();
         }
 
         protected IProducer<Null, string> Producer;
