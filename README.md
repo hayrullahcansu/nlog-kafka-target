@@ -10,11 +10,10 @@ nlog appender for kafka which provides the custom topics pattern and partitions
 
 ## Supported frameworks 
 ```
-.NET Framework 4.5, 4.6 & 4.7
-ASP.NET 4.5+ (NLog.Web package)
-ASP.NET Core (NLog.Web.AspNetCore package)
-.NET Core (NLog.Extensions.Logging package)
-.NET Standard 2.x+ - NLog 4.5
+- .NET 5, 6 and 7
+- .NET Core 2 and 3
+- .NET Standard 2.0+
+- .NET Framework 4.5 - 4.8
 ```
 
 ## Getting Started
