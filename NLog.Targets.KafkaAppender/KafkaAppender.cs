@@ -35,6 +35,21 @@ namespace NLog.Targets.KafkaAppender
         public Layout SslCertificateLocation { get; set; }
 
         /// <summary>
+        /// Path to CA (certificate authority) certificate used for authentication.
+        /// </summary>
+        public Layout SslCaLocation { get; set; }
+
+        /// <summary>
+        /// Path to certificate key used for authentication.
+        /// </summary>
+        public Layout SslKeyLocation { get; set; }
+
+        /// <summary>
+        /// SSL key password
+        /// </summary>
+        public Layout SslKeyPassword { get; set; }
+
+        /// <summary>
         /// Protocol used to communicate with brokers.
         /// </summary>
         public SecurityProtocol? SecurityProtocol { get; set; }
@@ -87,9 +102,26 @@ namespace NLog.Targets.KafkaAppender
                 throw new SslCertificateNotFoundException($"Could not find certificate by specified path: {sslCertificateLocation}");
             }
 
+            var sslCaLocation = RenderLogEvent(SslCaLocation, LogEventInfo.CreateNullEvent());
+            if (!string.IsNullOrEmpty(sslCaLocation) && !File.Exists(sslCaLocation))
+            {
+                throw new SslCertificateNotFoundException($"Could not find CA certificate by specified path: {sslCaLocation}");
+            }
+
+            var sslKeyLocation = RenderLogEvent(SslKeyLocation, LogEventInfo.CreateNullEvent());
+            if (!string.IsNullOrEmpty(sslKeyLocation) && !File.Exists(sslKeyLocation))
+            {
+                throw new SslCertificateNotFoundException($"Could not find certificate key by specified path: {sslKeyLocation}");
+            }
+
+            var sslKeyPassword = RenderLogEvent(SslKeyPassword, LogEventInfo.CreateNullEvent());
+
             var configs = new KafkaProducerConfigs
             {
                 SslCertificateLocation = string.IsNullOrEmpty(sslCertificateLocation) ? null : sslCertificateLocation,
+                SslCaLocation = string.IsNullOrEmpty(sslCaLocation) ? null : sslCaLocation,
+                SslKeyLocation = string.IsNullOrEmpty(sslKeyLocation) ? null : sslKeyLocation,
+                SslKeyPassword = string.IsNullOrEmpty(sslKeyPassword) ? null : sslKeyPassword,
                 SecurityProtocol = SecurityProtocol,
                 MessageTimeoutMs = MessageTimeoutMs
             };

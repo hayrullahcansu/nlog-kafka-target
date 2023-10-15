@@ -15,6 +15,9 @@ namespace NLog.Targets.KafkaAppender
             {
                 BootstrapServers = brokers,
                 SslCertificateLocation = configs?.SslCertificateLocation,
+                SslCaLocation = configs?.SslCaLocation,
+                SslKeyLocation = configs?.SslKeyLocation,
+                SslKeyPassword = configs?.SslKeyPassword,
                 SecurityProtocol = configs?.SecurityProtocol,
                 MessageTimeoutMs = configs?.MessageTimeoutMs
             };
