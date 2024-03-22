@@ -16,5 +16,10 @@ namespace NLog.Targets.KafkaAppender.Configs
 
         public int? MessageTimeoutMs { get; set; }
 
+        public SaslMechanism? SaslMechanism { get; set; }
+
+        public string SaslUsername { get; set; }
+
+        public string SaslPassword { get; set; }
     }
 }
