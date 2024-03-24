@@ -142,8 +142,8 @@ namespace NLog.Targets.KafkaAppender
                 SecurityProtocol = SecurityProtocol,
                 MessageTimeoutMs = MessageTimeoutMs,
                 SaslMechanism = SaslMechanism,
-                SaslUsername = saslUsername,
-                SaslPassword = saslPassword
+                SaslUsername = string.IsNullOrEmpty(saslUsername) ? null : saslUsername,
+                SaslPassword = string.IsNullOrEmpty(saslPassword) ? null : saslPassword,
             };
 
             try
