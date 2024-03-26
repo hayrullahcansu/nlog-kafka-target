@@ -19,7 +19,10 @@ namespace NLog.Targets.KafkaAppender
                 SslKeyLocation = configs?.SslKeyLocation,
                 SslKeyPassword = configs?.SslKeyPassword,
                 SecurityProtocol = configs?.SecurityProtocol,
-                MessageTimeoutMs = configs?.MessageTimeoutMs
+                MessageTimeoutMs = configs?.MessageTimeoutMs,
+                SaslUsername = configs?.SaslUsername,
+                SaslPassword = configs?.SaslPassword,
+                SaslMechanism = configs?.SaslMechanism
             };
 
             Producer = new ProducerBuilder<Null, string>(conf)

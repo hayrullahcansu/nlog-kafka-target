@@ -50,9 +50,24 @@ namespace NLog.Targets.KafkaAppender
         public Layout SslKeyPassword { get; set; }
 
         /// <summary>
+        /// Simple Authentication and Security Layer Username (for PLAIN/SASL-SCRAM)
+        /// </summary>
+        public Layout SaslUsername { get; set; }
+
+        /// <summary>
+        /// Simple Authentication and Security Layer Password (for PLAIN/SASL-SCRAM)
+        /// </summary>
+        public Layout SaslPassword { get; set; }
+
+        /// <summary>
         /// Protocol used to communicate with brokers.
         /// </summary>
         public SecurityProtocol? SecurityProtocol { get; set; }
+
+        /// <summary>
+        /// SASL mechanism to use for authentication. For Basic Authentication (apikey/value) use PLAIN 
+        /// </summary>
+        public SaslMechanism? SaslMechanism { get; set; }
 
         /// <summary>
         /// Gets or sets async or sync mode
@@ -115,6 +130,8 @@ namespace NLog.Targets.KafkaAppender
             }
 
             var sslKeyPassword = RenderLogEvent(SslKeyPassword, LogEventInfo.CreateNullEvent());
+            var saslUsername = RenderLogEvent(SaslUsername, LogEventInfo.CreateNullEvent());
+            var saslPassword = RenderLogEvent(SaslPassword, LogEventInfo.CreateNullEvent());
 
             var configs = new KafkaProducerConfigs
             {
@@ -123,7 +140,10 @@ namespace NLog.Targets.KafkaAppender
                 SslKeyLocation = string.IsNullOrEmpty(sslKeyLocation) ? null : sslKeyLocation,
                 SslKeyPassword = string.IsNullOrEmpty(sslKeyPassword) ? null : sslKeyPassword,
                 SecurityProtocol = SecurityProtocol,
-                MessageTimeoutMs = MessageTimeoutMs
+                MessageTimeoutMs = MessageTimeoutMs,
+                SaslMechanism = SaslMechanism,
+                SaslUsername = string.IsNullOrEmpty(saslUsername) ? null : saslUsername,
+                SaslPassword = string.IsNullOrEmpty(saslPassword) ? null : saslPassword,
             };
 
             try

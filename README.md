@@ -62,11 +62,44 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
 | sslKeyLocation          | `:string`     |      no     | Path to ssl key file                                              |                                                                                     |                                            |
 | sslKeyPassword          | `:string`     |      no     | Ssl key password                                                  |                                                                                     |                                            |
 | securityProtocol        | `:enum`       |      no     | Protocol used to communicate with brokers                         | `plaintext`                                                                         | `Plaintext` `Ssl` `SaslPlaintext` `SaslSsl`|
-| messageTimeoutMs        | `:int`        |      no     | Limits the time a produced message waits for successful delivery  |                                                                                     |                                            |
-
+| messageTimeoutMs        | `:int`        |      no     | Limits the time a produced message waits for successful delivery  |   |                                            |
+| SaslMechanism           | `:enum`     |      no     | SASL mechanism to use for authentication.  |`Gssapi` `Plain` `ScramSha256` `ScramSha512` `OAuthBearer` |`Gssapi` |
+| SaslUsername           | `:string`     |      no     | Simple Authentication and Security Layer Username  | | |
+| SaslPassword           | `:string`     |      no     | Simple Authentication and Security Layer Password  | | |
 
 Check documentation about all [`Layout Renderers`](https://nlog-project.org/config/?tab=layout-renderers)
 
+### SASL Basic authentication
+Scenario: using Confluent Cloud http://developer.confluent.io/get-started/dotnet/#configuration
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      autoReload="true">
+  <extensions>
+    <add assembly="NLog.Targets.KafkaAppender"/>
+  </extensions>
+  <targets>
+    <target xsi:type="KafkaAppender"
+            name="kafka"
+            topic="${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true}"
+            layout="${longdate}|${level:uppercase=true}|${logger}|${message}"
+            brokers="localhost:9092"
+            async="false"
+            securityProtocol="SaslPlaintext"
+            SaslMechanism="Plain"
+            SaslUsername="API-Key"
+            SaslPassword="API-secret"
+            >
+
+    </target>
+  </targets>
+  <rules>
+    <logger name="*" minlevel="Info" writeTo="kafka" />
+  </rules>
+</nlog>
+```
 
 ## Usage
 
