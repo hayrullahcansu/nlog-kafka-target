@@ -30,6 +30,11 @@ namespace NLog.Targets.KafkaAppender
         public Layout Brokers { get; set; }
 
         /// <summary>
+        /// Client identifier. default: rdkafka
+        /// </summary>
+        public Layout ClientId { get; set; }
+
+        /// <summary>
         /// Path to certificate (client's public key - PEM) used for authentication.
         /// </summary>
         public Layout SslCertificateLocation { get; set; }
@@ -133,8 +138,11 @@ namespace NLog.Targets.KafkaAppender
             var saslUsername = RenderLogEvent(SaslUsername, LogEventInfo.CreateNullEvent());
             var saslPassword = RenderLogEvent(SaslPassword, LogEventInfo.CreateNullEvent());
 
+            var kafkaClientId = RenderLogEvent(ClientId, LogEventInfo.CreateNullEvent());
+
             var configs = new KafkaProducerConfigs
             {
+                ClientId = string.IsNullOrEmpty(kafkaClientId) ? null : kafkaClientId,
                 SslCertificateLocation = string.IsNullOrEmpty(sslCertificateLocation) ? null : sslCertificateLocation,
                 SslCaLocation = string.IsNullOrEmpty(sslCaLocation) ? null : sslCaLocation,
                 SslKeyLocation = string.IsNullOrEmpty(sslKeyLocation) ? null : sslKeyLocation,

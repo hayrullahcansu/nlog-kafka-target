@@ -3,14 +3,14 @@ nlog appender for kafka which provides the custom topics pattern and partitions
 
 ![Nuget](https://img.shields.io/nuget/dt/NLog.Targets.KafkaAppender)
 [![GitHub issues](https://img.shields.io/github/issues/hayrullahcansu/nlog-kafka-target)](https://github.com/hayrullahcansu/nlog-kafka-target/issues)
-![Nuget](https://img.shields.io/nuget/v/NLog.Targets.KafkaAppender)
+[![Nuget](https://img.shields.io/nuget/v/NLog.Targets.KafkaAppender)](https://www.nuget.org/packages/NLog.Targets.KafkaAppender/)
 [![GitHub forks](https://img.shields.io/github/forks/hayrullahcansu/nlog-kafka-target)](https://github.com/hayrullahcansu/nlog-kafka-target/network)
 [![GitHub stars](https://img.shields.io/github/stars/hayrullahcansu/nlog-kafka-target)](https://github.com/hayrullahcansu/nlog-kafka-target/stargazers)
 
 
 ## Supported frameworks 
 ```
-- .NET 5, 6 and 7
+- .NET 5, 6, 7 and 8
 - .NET Core 2 and 3
 - .NET Standard 2.0+
 - .NET Framework 4.5 - 4.8
@@ -38,9 +38,8 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
             topic="${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true}"
             layout="${longdate}|${level:uppercase=true}|${logger}|${message}"
             brokers="localhost:9092"
+            clientId="${hostname}"
             async="false"
-            sslCertificateLocation=""
-            securityProtocol="plaintext"
             >
 
     </target>
@@ -50,22 +49,23 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
   </rules>
 </nlog>
 ```
-| Param Name              | Variable Type | Requirement | Description                                                       | Default                                                                             | Possible values                            |
-|-------------------------|---------------|-------------|-------------------------------------------------------------------|-------------------------------------------------------------------------------------|--------------------------------------------|
-| name                    | `:string`     |    yes`*`   | Target's name                                                     |                                                                                     |                                            |
-| topic                   | `:layout`     |    yes`*`   | Topic pattern can be layout                                       | `${logger}`                                                                         |                                            |
-| layout                  | `:layout`     |      no     | Layout used to format log messages.                               | `${longdate}|${level:uppercase=true}|${logger}|${message}`                          |                                            |
-| brokers                 | `:string`     |    yes`*`   | Kafka brokers with comma-separated                                |                                                                                     |                                            |
-| async                   | `:boolean`    |      no     | Async or sync mode                                                | `false`                                                                             |                                            |
-| sslCertificateLocation  | `:string`     |      no     | Path to ssl certificate                                           |                                                                                     |                                            |
-| sslCaLocation           | `:string`     |      no     | Path to ssl CA certificate                                        |                                                                                     |                                            |
-| sslKeyLocation          | `:string`     |      no     | Path to ssl key file                                              |                                                                                     |                                            |
-| sslKeyPassword          | `:string`     |      no     | Ssl key password                                                  |                                                                                     |                                            |
-| securityProtocol        | `:enum`       |      no     | Protocol used to communicate with brokers                         | `plaintext`                                                                         | `Plaintext` `Ssl` `SaslPlaintext` `SaslSsl`|
-| messageTimeoutMs        | `:int`        |      no     | Limits the time a produced message waits for successful delivery  |   |                                            |
-| SaslMechanism           | `:enum`     |      no     | SASL mechanism to use for authentication.  |`Gssapi` `Plain` `ScramSha256` `ScramSha512` `OAuthBearer` |`Gssapi` |
-| SaslUsername           | `:string`     |      no     | Simple Authentication and Security Layer Username  | | |
-| SaslPassword           | `:string`     |      no     | Simple Authentication and Security Layer Password  | | |
+| Param Name              | Variable Type | Requirement | Description                                                               | Default                                                    |
+|-------------------------|---------------|-------------|---------------------------------------------------------------------------|------------------------------------------------------------|
+| name                    | `:string`     |    yes`*`   | Target's name                                                             |                                                            |
+| topic                   | `:layout`     |    yes`*`   | Topic pattern can be layout                                               | `${logger}`                                                |
+| layout                  | `:layout`     |      no     | Layout used to format log messages.                                       | `${longdate}|${level:uppercase=true}|${logger}|${message}` |
+| brokers                 | `:string`     |    yes`*`   | Kafka brokers with comma-separated                                        |                                                            |
+| clientId                | `:layout`     |      no     | Producer Client Identification. Ex. `${hostname}`                         |                                                            |
+| async                   | `:boolean`    |      no     | Async or sync mode                                                        | `false`                                                    |
+| securityProtocol        | `:enum`       |      no     | Broker Security Protocol. Ex. `Plaintext`,`Ssl`,`SaslPlaintext`,`SaslSsl` | `plaintext`                                                |
+| SaslMechanism           | `:enum`       |      no     | SASL Mechanism. Ex. `Gssapi`,`Plain`,`ScramSha256`,`ScramSha512`,`OAuthBearer` |`Gssapi` |
+| sslCertificateLocation  | `:string`     |      no     | Path to SSL certificate                                                   | |
+| sslCaLocation           | `:string`     |      no     | Path to SSL CA certificate                                                | |
+| sslKeyLocation          | `:string`     |      no     | Path to SSL key file                                                      | |
+| sslKeyPassword          | `:string`     |      no     | SSL key password                                                          | |
+| SaslUsername            | `:string`     |      no     | Simple Authentication and Security Layer (SASL) Username                  | |
+| SaslPassword            | `:string`     |      no     | Simple Authentication and Security Layer (SASL) Password                  | |
+| messageTimeoutMs        | `:int`        |      no     | Limits the time a produced message waits for successful delivery          | |
 
 Check documentation about all [`Layout Renderers`](https://nlog-project.org/config/?tab=layout-renderers)
 

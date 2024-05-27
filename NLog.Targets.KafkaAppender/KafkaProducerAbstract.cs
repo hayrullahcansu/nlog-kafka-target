@@ -24,6 +24,10 @@ namespace NLog.Targets.KafkaAppender
                 SaslPassword = configs?.SaslPassword,
                 SaslMechanism = configs?.SaslMechanism
             };
+            if (!string.IsNullOrEmpty(configs?.ClientId))
+            {
+                conf.ClientId = configs.ClientId;
+            }
 
             Producer = new ProducerBuilder<Null, string>(conf)
                 .SetErrorHandler((producer, error) =>
