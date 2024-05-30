@@ -4,6 +4,8 @@ namespace NLog.Targets.KafkaAppender.Configs
 {
     public class KafkaProducerConfigs
     {
+        public string ClientId { get; set; }
+
         public string SslCertificateLocation { get; set; }
 
         public string SslCaLocation { get; set; }
