@@ -1,5 +1,5 @@
 # nlog-kafka-target
-nlog appender for kafka which provides the custom topics pattern and partitions
+NLog appender for kafka which provides the custom topics pattern and partitions
 
 ![Nuget](https://img.shields.io/nuget/dt/NLog.Targets.KafkaAppender)
 [![GitHub issues](https://img.shields.io/github/issues/hayrullahcansu/nlog-kafka-target)](https://github.com/hayrullahcansu/nlog-kafka-target/issues)
@@ -13,7 +13,7 @@ nlog appender for kafka which provides the custom topics pattern and partitions
 - .NET 5, 6, 7 and 8
 - .NET Core 2 and 3
 - .NET Standard 2.0+
-- .NET Framework 4.5 - 4.8
+- .NET Framework 4.6.2 - 4.8.1
 ```
 
 ## Getting Started
@@ -38,10 +38,8 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
             topic="${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true}"
             layout="${longdate}|${level:uppercase=true}|${logger}|${message}"
             brokers="localhost:9092"
-            clientId="${hostname}"
-            async="false"
-            >
-
+            async="false">
+        <setting key="client.id" value="NLog_${machinename}" /> <!-- Multiple allowed -->
     </target>
   </targets>
   <rules>
@@ -55,7 +53,6 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
 | topic                   | `:layout`     |    yes`*`   | Topic pattern can be layout                                               | `${logger}`                                                |
 | layout                  | `:layout`     |      no     | Layout used to format log messages.                                       | `${longdate}|${level:uppercase=true}|${logger}|${message}` |
 | brokers                 | `:string`     |    yes`*`   | Kafka brokers with comma-separated                                        |                                                            |
-| clientId                | `:layout`     |      no     | Producer Client Identification. Ex. `${hostname}`                         |                                                            |
 | async                   | `:boolean`    |      no     | Async or sync mode                                                        | `false`                                                    |
 | securityProtocol        | `:enum`       |      no     | Broker Security Protocol. Ex. `Plaintext`,`Ssl`,`SaslPlaintext`,`SaslSsl` | `plaintext`                                                |
 | SaslMechanism           | `:enum`       |      no     | SASL Mechanism. Ex. `Gssapi`,`Plain`,`ScramSha256`,`ScramSha512`,`OAuthBearer` |`Gssapi` |
@@ -66,6 +63,7 @@ Install via .NET CLI          dotnet add package NLog.Targets.KafkaAppender
 | SaslUsername            | `:string`     |      no     | Simple Authentication and Security Layer (SASL) Username                  | |
 | SaslPassword            | `:string`     |      no     | Simple Authentication and Security Layer (SASL) Password                  | |
 | messageTimeoutMs        | `:int`        |      no     | Limits the time a produced message waits for successful delivery          | |
+| setting                 | key + value   |      no     | [Kafka Producer Config](https://kafka.apache.org/documentation/#producerconfigs) | |
 
 Check documentation about all [`Layout Renderers`](https://nlog-project.org/config/?tab=layout-renderers)
 
@@ -90,9 +88,8 @@ Scenario: using Confluent Cloud http://developer.confluent.io/get-started/dotnet
             securityProtocol="SaslPlaintext"
             SaslMechanism="Plain"
             SaslUsername="API-Key"
-            SaslPassword="API-secret"
-            >
-
+            SaslPassword="API-secret">
+        <setting key="client.id" value="NLog_${machinename}" /> <!-- Multiple allowed -->
     </target>
   </targets>
   <rules>
