@@ -11,25 +11,37 @@ namespace NLog.Targets.KafkaAppender
 
         protected KafkaProducerAbstract(string brokers, KafkaProducerConfigs configs = null)
         {
-            var conf = new ProducerConfig
+            var producerConfig = configs?.Settings?.Count > 0 ? new ProducerConfig(configs.Settings) : new ProducerConfig();
+            if (!string.IsNullOrEmpty(brokers))
             {
-                BootstrapServers = brokers,
-                SslCertificateLocation = configs?.SslCertificateLocation,
-                SslCaLocation = configs?.SslCaLocation,
-                SslKeyLocation = configs?.SslKeyLocation,
-                SslKeyPassword = configs?.SslKeyPassword,
-                SecurityProtocol = configs?.SecurityProtocol,
-                MessageTimeoutMs = configs?.MessageTimeoutMs,
-                SaslUsername = configs?.SaslUsername,
-                SaslPassword = configs?.SaslPassword,
-                SaslMechanism = configs?.SaslMechanism
-            };
-            if (!string.IsNullOrEmpty(configs?.ClientId))
-            {
-                conf.ClientId = configs.ClientId;
+                producerConfig.BootstrapServers = brokers;
             }
 
-            Producer = new ProducerBuilder<Null, string>(conf)
+            if (configs != null)
+            {
+                if (configs.SaslMechanism.HasValue)
+                    producerConfig.SaslMechanism = configs.SaslMechanism;
+                if (configs.SecurityProtocol.HasValue)
+                    producerConfig.SecurityProtocol = configs.SecurityProtocol;
+                if (configs.SslCertificateLocation != null)
+                    producerConfig.SslCertificateLocation = configs.SslCertificateLocation;
+                if (configs.SslCaLocation != null)
+                    producerConfig.SslCaLocation = configs.SslCaLocation;
+                if (configs.SslKeyLocation != null)
+                    producerConfig.SslKeyLocation = configs.SslKeyLocation;
+                if (configs.SslKeyPassword != null)
+                    producerConfig.SslKeyPassword = configs.SslKeyPassword;
+                if (configs.MessageTimeoutMs.HasValue)
+                    producerConfig.MessageTimeoutMs = configs.MessageTimeoutMs;
+                if (configs.SaslUsername != null)
+                    producerConfig.SaslUsername = configs.SaslUsername;
+                if (configs.SaslPassword != null)
+                    producerConfig.SaslPassword = configs.SaslPassword;
+                if (!string.IsNullOrEmpty(configs.ClientId))
+                    producerConfig.ClientId = configs.ClientId;
+            }
+
+            Producer = new ProducerBuilder<Null, string>(producerConfig)
                 .SetErrorHandler((producer, error) =>
                 {
                     InternalLogger.Error("KafkaAppender - {0}Error when sending message to topic. ErrorCode={1}, Reason={2}", error.IsFatal ? "Fatal " : "", error.Code, error.Reason);

@@ -5,6 +5,7 @@ using NLog.Layouts;
 using NLog.Targets.KafkaAppender.Configs;
 using NLog.Targets.KafkaAppender.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
@@ -84,6 +85,8 @@ namespace NLog.Targets.KafkaAppender
         /// </summary>
         public int? MessageTimeoutMs { get; set; }
 
+        [ArrayParameter(typeof(KafkaProducerConfigSetting), "setting")]
+        public IList<KafkaProducerConfigSetting> Settings { get; } = new List<KafkaProducerConfigSetting>();
 
         private KafkaProducerAbstract _producer;
 
@@ -137,8 +140,15 @@ namespace NLog.Targets.KafkaAppender
             var sslKeyPassword = RenderLogEvent(SslKeyPassword, LogEventInfo.CreateNullEvent());
             var saslUsername = RenderLogEvent(SaslUsername, LogEventInfo.CreateNullEvent());
             var saslPassword = RenderLogEvent(SaslPassword, LogEventInfo.CreateNullEvent());
-
             var kafkaClientId = RenderLogEvent(ClientId, LogEventInfo.CreateNullEvent());
+
+            Dictionary<string, string> settings = new Dictionary<string, string>();
+            foreach (var setting in Settings)
+            {
+                var settingValue = RenderLogEvent(setting.Value, LogEventInfo.CreateNullEvent()) ?? string.Empty;
+                settings[setting.Key] = settingValue;
+                InternalLogger.Debug("{0}: Kafka Config Key '{1}' = {2}", this, setting.Key, settingValue);
+            }
 
             var configs = new KafkaProducerConfigs
             {
@@ -152,6 +162,7 @@ namespace NLog.Targets.KafkaAppender
                 SaslMechanism = SaslMechanism,
                 SaslUsername = string.IsNullOrEmpty(saslUsername) ? null : saslUsername,
                 SaslPassword = string.IsNullOrEmpty(saslPassword) ? null : saslPassword,
+                Settings = settings,
             };
 
             try
@@ -216,7 +227,7 @@ namespace NLog.Targets.KafkaAppender
             {
                 _producer.Produce(topic, logMessage);
             }
-            catch (ProduceException<Null, string> ex)
+            catch (KafkaException ex)
             {
                 InternalLogger.Warn(ex, "KafkaAppender(Name={0}) - {1}Exception when sending message to topic={2}. Reason={3}", Name, ex.Error.IsFatal ? "Fatal " : "", topic, ex.Error.ToString());
 
