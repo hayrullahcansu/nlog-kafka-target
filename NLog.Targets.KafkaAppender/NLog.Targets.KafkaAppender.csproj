@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-    <Version>2.1.6</Version>
+    <Version>2.1.7</Version>
     <Authors>Hayrullah Cansu</Authors>
     <Company>Hayrullah Cansu</Company>
     <Description>NLog Target/Appender for Apache Kafka</Description>
@@ -15,7 +15,7 @@
     <PackageReleaseNotes>https://github.com/hayrullahcansu/nlog-kafka-target/releases</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>NLog.Targets.KafkaAppender</PackageId>
-    <AssemblyVersion>2.1.6</AssemblyVersion>
+    <AssemblyVersion>2.1.7</AssemblyVersion>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
