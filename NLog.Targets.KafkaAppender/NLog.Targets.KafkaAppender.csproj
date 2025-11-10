@@ -2,20 +2,21 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-    <Version>2.1.7</Version>
+    <Version>2.1.8</Version>
     <Authors>Hayrullah Cansu</Authors>
     <Company>Hayrullah Cansu</Company>
     <Description>NLog Target/Appender for Apache Kafka</Description>
     <Copyright>Copyright 2017-2023, Hayrullah Cansu</Copyright>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/hayrullahcansu/nlog-kafka-target/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/hayrullahcansu/nlog-kafka-target</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hayrullahcansu/nlog-kafka-target</RepositoryUrl>
     <PackageTags>Kafka;nlog-kafka-appender;librdkafka;nlog-kafka-target;kafka-target;nlog;appender;target</PackageTags>
     <PackageReleaseNotes>https://github.com/hayrullahcansu/nlog-kafka-target/releases</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>NLog.Targets.KafkaAppender</PackageId>
-    <AssemblyVersion>2.1.7</AssemblyVersion>
+    <AssemblyVersion>2.1.8</AssemblyVersion>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
@@ -25,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
